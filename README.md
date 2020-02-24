@@ -36,5 +36,5 @@ The remaining reads of each sample were mapped to a custom Kraken reference data
 
 
 ## Contacts
-[Sung Gong](https://www.obgyn.cam.ac.uk/staff/research-staff/sung-gong/)
-[Marcus de Goffau](https://www.sanger.ac.uk/people/directory/de-goffau-marcus)
++ [Sung Gong](https://www.obgyn.cam.ac.uk/staff/research-staff/sung-gong/)
++ [Marcus de Goffau](https://www.sanger.ac.uk/people/directory/de-goffau-marcus)
