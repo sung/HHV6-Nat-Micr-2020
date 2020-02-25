@@ -23,8 +23,79 @@ In order to remove as many reads of human origin as possible, additional human r
 See `create_human_db_for_bowtie2.sh` for details.
 
 ## Post processing
-The remaining reads of each sample were mapped to a custom Kraken reference database, including the default bacterial and viral genomes and few additional eukaryotic genomes to remove residual unmapped human reads. Kraken (v0.10.6) was run using the metagm_run_kraken option. **Further details to follow**
+The remaining reads of each sample were mapped to a custom Kraken reference database, including the default bacterial and viral genomes and few additional eukaryotic genomes to remove residual unmapped human reads. Kraken (v0.10.6) was run using the metagm_run_kraken option.
 
+### Step 1: Run Kraken 
+Using the `-noclean` option on the paired filtered reads:
+`metagm_run_kraken -t 4 -noclean scanner_DB Sample(x).report Sample(x)_kneaddata_paired_1.fastq Sample(x)_kneaddata_paired_2.fastq`
+
+This will generate both a .report file and a .report.kraken_out file.
+
+### Step 2: Open the Sample(x).report file. 
+Write down all of the ID’s of the group of interest that you want to extract (penultimate column). This list can be very short or somewhat long, like in the case of E. coli. Make a column in a txt file of this list (Target_ids.tab).
+
+### Step 3: Run the Perl script (shown below) on all of the Sample(x).report.kraken_out files.
+```perl 
+#!/usr/bin/perl
+#use strict;
+
+my $path = $ARGV[0];
+if (scalar($path)==0) {
+    $path = `pwd`;
+    chomp $path;
+}
+
+undef @files;
+opendir PATH, $path;
+@files = grep /\.kraken_out/, readdir PATH;
+closedir PATH;
+
+my $ids = "";
+open FILE, "$path\/Target\_ids\.tab";
+while (<FILE>) {
+    chomp;
+    $ids .= "\|$_\|";
+}
+close FILE;
+
+foreach (@files){
+    my $f = $_;
+    open OUT, ">$path\/$f\.selection";
+    open FILE, "$path\/$f";
+    while (<FILE>) {
+        my $line = $_;
+        my @line = split /\t/, $line;
+        if ($ids =~ /\|$line[2]\|/) {
+            print OUT "$line[1]\n";
+        }
+    }
+    close FILE;
+    close OUT;
+}
+```
+ 
+### Step 4: Unix: Extract read pair headers of all reads of each sample: 
+`less Sample(x)_kneaddata_paired_1.fastq | grep @HX1 > Sample(x).tab`
+
+### Step 5: Run the following R code using the output from steps 3 and 4:
+```r 
+read_names <- scan("Sample(x).tab", what="\n")
+selection <- scan("Sample(x).report.kraken_out.selection", what="\n")
+selection <- gsub(selection, pattern="/1", replacement="")
+selection <- as.numeric(selection)
+
+read_selection <- read_names[selection]
+read_selection <- gsub(read_selection, pattern="@", replacement="")
+
+write(read_selection, file="Sample(x)Target.txt", ncolumns=1, sep="\t")
+```
+
+### Step 6: Unix: Extract all the target reads (forward and reverse).
+```bash 
+seqtk subseq Sample(x)_kneaddata_paired_1.fastq Sample(x)Target.txt > Sample(x)Target1.fq
+seqtk subseq Sample(x)_kneaddata_paired_2.fastq Sample(x)Target.txt > Sample(x)Target2.fq
+```
+ 
 ## A list of dependent software and database
 - [tophat2](https://github.com/infphilo/tophat)
 - [bamutils](https://genome.sph.umich.edu/wiki/BamUtil)
