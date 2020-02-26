@@ -23,13 +23,16 @@ In order to remove as many reads of human origin as possible, additional human r
 See [`create_human_db_for_bowtie2.sh`](create_human_db_for_bowtie2.sh) for details.
 
 ## Post processing
-The remaining reads of each sample were mapped to a custom Kraken reference database, including the default bacterial and viral genomes and few additional eukaryotic genomes to remove residual unmapped human reads. Kraken (v0.10.6) was run using the metagm_run_kraken option.
+The remaining reads of each sample were mapped to a custom Kraken reference database, including the default bacterial and viral genomes and few additional eukaryotic genomes to remove residual unmapped human reads. Kraken (v0.10.6) was run using the `metagm_run_kraken` option.
 
 ### Step 1: Run Kraken 
 Using the `-noclean` option on the paired filtered reads:
-`metagm_run_kraken -t 4 -noclean scanner_DB Sample(x).report Sample(x)_kneaddata_paired_1.fastq Sample(x)_kneaddata_paired_2.fastq`
+```bash
+metagm_run_kraken -t 4 -noclean scanner_DB Sample(x).report Sample(x)_kneaddata_paired_1.fastq Sample(x)_kneaddata_paired_2.fastq
 
-This will generate both a .report file and a .report.kraken_out file.
+```
+
+This will generate both a `.report` file and a `.report.kraken_out` file.
 
 ### Step 2: Open the Sample(x).report file. 
 Write down all of the ID’s of the group of interest that you want to extract (penultimate column). This list can be very short or somewhat long, like in the case of E. coli. Make a column in a txt file of this list (Target_ids.tab).
@@ -75,7 +78,9 @@ foreach (@files){
 ```
  
 ### Step 4: Unix: Extract read pair headers of all reads of each sample: 
-`less Sample(x)_kneaddata_paired_1.fastq | grep @HX1 > Sample(x).tab`
+```bash
+less Sample(x)_kneaddata_paired_1.fastq | grep @HX1 > Sample(x).tab
+```
 
 ### Step 5: Run the following R code using the output from steps 3 and 4:
 ```r 
