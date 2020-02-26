@@ -12,7 +12,7 @@ The initial ‘unmapped’ reads were filtered out to remove poor quality reads,
 4. poly A/T > 5bp, and 
 5. low-complexity reads (defined by [the dust score](https://www.ncbi.nlm.nih.gov/pubmed/16796549)) > 7. 
 
-Following shell script handles what's been described above: `preprocess_unmapped_reads.sh`
+Following shell script handles what's been described above: `[preprocess_unmapped_reads.sh](preprocess_unmapped_reads.sh)`
 
 ## A custom human sequence DB
 In order to remove as many reads of human origin as possible, additional human reads were subtracted if they aligned to sequences present in the following databases: 
@@ -20,7 +20,7 @@ In order to remove as many reads of human origin as possible, additional human r
 2. [human RefSeq](ftp://ftp.ncbi.nlm.nih.gov/genomes/refseq/vertebrate_mammalian/Homo_sapiens/), 
 3. all human contigs and clone sequences from NCBI NT. 
 
-See `create_human_db_for_bowtie2.sh` for details.
+See `[create_human_db_for_bowtie2.sh](create_human_db_for_bowtie2.sh)` for details.
 
 ## Post processing
 The remaining reads of each sample were mapped to a custom Kraken reference database, including the default bacterial and viral genomes and few additional eukaryotic genomes to remove residual unmapped human reads. Kraken (v0.10.6) was run using the metagm_run_kraken option.
@@ -34,7 +34,7 @@ This will generate both a .report file and a .report.kraken_out file.
 ### Step 2: Open the Sample(x).report file. 
 Write down all of the ID’s of the group of interest that you want to extract (penultimate column). This list can be very short or somewhat long, like in the case of E. coli. Make a column in a txt file of this list (Target_ids.tab).
 
-### Step 3: Run the Perl script (shown below) on all of the Sample(x).report.kraken_out files.
+### Step 3: Run the Perl script (shown below, or [here](parse_kraken_out.pl)) on all of the Sample(x).report.kraken_out files.
 ```perl 
 #!/usr/bin/perl
 #use strict;
